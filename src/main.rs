@@ -36,6 +36,11 @@ async fn main() -> Result<()> {
         }
         println!("-------------------------");
         println!("request: {:?}", request);
+        
+        //Google IP Adress on port 80 (http comunication)
+        let mut server = TcpStream::connect("	172.253.115.91:80").await?;
+
+        server.write_all(request.as_bytes()).await?;        
     }
 
     Ok(())
