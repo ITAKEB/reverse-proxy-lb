@@ -1,6 +1,6 @@
-use anyhow::{*};
-use tokio::fs::File;
+use anyhow::*;
 
+use std::fs;
 use std::result::Result::Ok;
 use std::{borrow::BorrowMut, collections::VecDeque};
 use tokio::{
@@ -14,7 +14,8 @@ use std::io::Cursor;
 async fn main() -> Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080").await?;
     let mut rrb: VecDeque<String> = VecDeque::with_capacity(3);
-    let servers_ip = read_config_file().await?;
+
+    let servers_ip = read_config_file()?;
     //First server
     rrb.push_back(servers_ip[0].clone());
     //Second server
@@ -22,7 +23,7 @@ async fn main() -> Result<()> {
     //Third server
     rrb.push_back(servers_ip[2].clone());
 
-    //println!("{:?}",rrb);
+    //println!("{:?}", rrb);
 
     loop {
         let (mut stream, _addr) = listener.accept().await?;
@@ -48,7 +49,8 @@ async fn main() -> Result<()> {
         }
         println!("-------------------------");
         println!("request: {:?}", request);
-
+        //Save request on log.txt
+        write_log_file(&request)?;
         //Pop new server ip
         let ip_server: String = rrb.pop_front().unwrap();
         let ip_server_c = ip_server.clone();
@@ -109,18 +111,20 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
+fn read_config_file() -> Result<Vec<String>> {
+    let data = fs::read("./files/config.txt").expect("Unable to read file");
 
-async fn read_config_file() -> Result<Vec<String>> {
-    let config_file = File::open("./files/config.txt").await?;
-    let mut reader = BufReader::new(config_file);
-
-    let mut text = String::new();
-
-    for _ in 0..3 {
-        reader.read_line(&mut text).await?;
-    }
-
-    let ips: Vec<String> = text.split("\n").map(|s| s.to_owned()).collect();
+    let ips_data = String::from_utf8(data)?;
+    let ips = ips_data.split("\n").map(|s| s.to_owned()).collect();
 
     Ok(ips)
+}
+
+fn write_log_file(data: &String) -> Result<()> {
+    let old_text = fs::read("./files/log.txt").expect("Unable to read file");
+    let mut old_data = String::from_utf8(old_text)?;
+    old_data.push_str(data);
+    fs::write("./files/log.txt", old_data).expect("Unable to write file");
+
+    Ok(())
 }
