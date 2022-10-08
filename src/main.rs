@@ -1,4 +1,6 @@
-use anyhow::*;
+use anyhow::{*};
+use tokio::fs::File;
+
 use std::result::Result::Ok;
 use std::{borrow::BorrowMut, collections::VecDeque};
 use tokio::{
@@ -12,12 +14,15 @@ use std::io::Cursor;
 async fn main() -> Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080").await?;
     let mut rrb: VecDeque<String> = VecDeque::with_capacity(3);
+    let servers_ip = read_config_file().await?;
     //First server
-    rrb.push_back("172.253.115.91:80".to_owned());
+    rrb.push_back(servers_ip[0].clone());
     //Second server
-    rrb.push_back("172.253.115.91:80".to_owned());
+    rrb.push_back(servers_ip[1].clone());
     //Third server
-    rrb.push_back("172.253.115.91:80".to_owned());
+    rrb.push_back(servers_ip[2].clone());
+
+    //println!("{:?}",rrb);
 
     loop {
         let (mut stream, _addr) = listener.accept().await?;
@@ -102,4 +107,20 @@ async fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+
+async fn read_config_file() -> Result<Vec<String>> {
+    let config_file = File::open("./files/config.txt").await?;
+    let mut reader = BufReader::new(config_file);
+
+    let mut text = String::new();
+
+    for _ in 0..3 {
+        reader.read_line(&mut text).await?;
+    }
+
+    let ips: Vec<String> = text.split("\n").map(|s| s.to_owned()).collect();
+
+    Ok(ips)
 }
