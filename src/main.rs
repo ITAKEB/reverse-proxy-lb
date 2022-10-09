@@ -1,8 +1,9 @@
 use anyhow::*;
 
-use std::fs;
 use std::result::Result::Ok;
+use std::time::Duration;
 use std::{borrow::BorrowMut, collections::VecDeque};
+use std::{fs, thread};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
     net::{TcpListener, TcpStream},
@@ -38,8 +39,12 @@ async fn main() -> Result<()> {
         //Replace Host
         let mut host = String::new();
         reader.read_line(&mut host).await?;
-        host = "Host: 172.253.115.91\r\n".to_owned();
+        //host = "Host: 54.174.150.245\r\n".to_owned();
+        //Pop new server ip
+        let ip_server: String = rrb.pop_front().unwrap();
+        let ip: Vec<&str> = ip_server.split(':').collect();
 
+        host = format!("Host: {}\r\n", ip[0]);
         request.push_str(&host);
         loop {
             reader.read_line(&mut request).await?;
@@ -51,12 +56,9 @@ async fn main() -> Result<()> {
         println!("request: {:?}", request);
         //Save request on log.txt
         write_log_file(&request)?;
-        //Pop new server ip
-        let ip_server: String = rrb.pop_front().unwrap();
-        let ip_server_c = ip_server.clone();
 
         //Server ip conection (http comunication)
-        let conection = TcpStream::connect(ip_server).await;
+        let conection = TcpStream::connect(&ip_server).await;
 
         match conection {
             Ok(mut server) => {
@@ -91,7 +93,7 @@ async fn main() -> Result<()> {
 
                 response.push_str(&b);
                 stream.write_all(response.as_bytes()).await?;
-                rrb.push_back(ip_server_c);
+                rrb.push_back(ip_server);
                 println!("-------------------------");
                 println!("{:?}", rrb);
             }
@@ -101,30 +103,30 @@ async fn main() -> Result<()> {
 
                 stream.write_all(response.as_bytes()).await?;
                 //Add to end ip server
-                rrb.push_back(ip_server_c);
+                rrb.push_back(ip_server);
                 println!("-------------------------");
                 println!("{:?}", rrb);
             }
         }
+        thread::sleep(Duration::from_millis(2000));
     }
 
     Ok(())
 }
 
 fn read_config_file() -> Result<Vec<String>> {
-    let data = fs::read("./files/config.txt").expect("Unable to read file");
+    let data = fs::read_to_string("./files/config.txt").expect("Unable to read file");
 
-    let ips_data = String::from_utf8(data)?;
-    let ips = ips_data.split("\n").map(|s| s.to_owned()).collect();
+    let ips = data.split("\n").map(|s| s.to_owned()).collect();
 
     Ok(ips)
 }
 
 fn write_log_file(data: &String) -> Result<()> {
-    let old_text = fs::read("./files/log.txt").expect("Unable to read file");
-    let mut old_data = String::from_utf8(old_text)?;
-    old_data.push_str(data);
-    fs::write("./files/log.txt", old_data).expect("Unable to write file");
+    let mut old_text = fs::read_to_string("./files/log.txt").expect("Unable to read file");
+
+    old_text.push_str(data);
+    fs::write("./files/log.txt", old_text).expect("Unable to write file");
 
     Ok(())
 }
