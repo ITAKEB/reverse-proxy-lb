@@ -5,11 +5,9 @@ use std::time::Duration;
 use std::{borrow::BorrowMut, collections::VecDeque};
 use std::{fs, thread};
 use tokio::{
-    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+    io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader},
     net::{TcpListener, TcpStream},
 };
-
-use std::io::Cursor;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -39,7 +37,7 @@ async fn main() -> Result<()> {
         //Replace Host
         let mut host = String::new();
         reader.read_line(&mut host).await?;
-        //host = "Host: 54.174.150.245\r\n".to_owned();
+
         //Pop new server ip
         let ip_server: String = rrb.pop_front().unwrap();
         let ip: Vec<&str> = ip_server.split(':').collect();
@@ -63,36 +61,16 @@ async fn main() -> Result<()> {
         match conection {
             Ok(mut server) => {
                 server.write_all(request.as_bytes()).await?;
-                let mut reader = BufReader::new(server);
-                let mut response = String::new();
-                reader.read_line(&mut response).await?;
-                loop {
-                    reader.read_line(&mut response).await?;
-                    if response.ends_with("\r\n\r\n") {
-                        break;
-                    }
-                }
+
+                let mut response = Vec::new();
+                server.read_to_end(&mut response).await?;
+
                 println!("-------------------------");
-                println!("response: {:?}", response);
-
-                let mut cursor = Cursor::new(reader.buffer());
-                let mut body = vec![];
-                loop {
-                    let num_bytes = cursor
-                        .read_until(b'-', &mut body)
-                        .await
-                        .expect("reading from cursor won't fail");
-
-                    if num_bytes == 0 {
-                        break;
-                    }
-                }
+                println!("buffer_response = {:?}", response);
                 println!("-------------------------");
-                let b = String::from_utf8(body)?;
-                println!("body = {:?}", b);
 
-                response.push_str(&b);
-                stream.write_all(response.as_bytes()).await?;
+                stream.write_all(&response).await?;
+
                 rrb.push_back(ip_server);
                 println!("-------------------------");
                 println!("{:?}", rrb);
@@ -102,7 +80,7 @@ async fn main() -> Result<()> {
                 let response = String::from("HTTP/1.1 500 Internal Server Error\r\n\r\n");
 
                 stream.write_all(response.as_bytes()).await?;
-                //Add to end ip server
+                //Add to end server ip
                 rrb.push_back(ip_server);
                 println!("-------------------------");
                 println!("{:?}", rrb);
