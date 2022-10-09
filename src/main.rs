@@ -1,130 +1,48 @@
-use anyhow::*;
-
 use std::fs;
-use std::result::Result::Ok;
-use std::{borrow::BorrowMut, collections::VecDeque};
-use tokio::{
-    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-    net::{TcpListener, TcpStream},
-};
+use std::io::{prelude::*, BufReader};
+use std::net::{TcpListener, TcpStream};
+use std::thread;
+use std::time;
 
-use std::io::Cursor;
+use reverse_proxy_lb::threadpool::ThreadPool;
 
-#[tokio::main]
-async fn main() -> Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:8080").await?;
-    let mut rrb: VecDeque<String> = VecDeque::with_capacity(3);
+fn handle_connection(mut stream: TcpStream) {
+    let buf_reader = BufReader::new(&mut stream);
+    let request_line = buf_reader.lines().next().unwrap().unwrap();
 
-    let servers_ip = read_config_file()?;
-    //First server
-    rrb.push_back(servers_ip[0].clone());
-    //Second server
-    rrb.push_back(servers_ip[1].clone());
-    //Third server
-    rrb.push_back(servers_ip[2].clone());
+    let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
+        ("HTTP/1.1 200 OK", "./files/hello.html")
+    } else {
+        ("HTTP/1.1 404 NOT FOUND", "./files/404.html")
+    };
 
-    //println!("{:?}", rrb);
+    let contents = fs::read_to_string(filename).unwrap();
+    let length = contents.len();
 
-    loop {
-        let (mut stream, _addr) = listener.accept().await?;
-        //println!("new client: {:?}", stream);
-        //println!("{:?}", stream.local_addr()?);
-        let strm = stream.borrow_mut();
+    let response =
+        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
 
-        let mut reader = BufReader::new(strm);
+    stream.write_all(response.as_bytes()).unwrap();
+    //let ten_millis = time::Duration::from_millis(10000);
+    //thread::sleep(ten_millis);
+ 
+    stream.flush().unwrap();
+}
 
-        let mut request = String::new();
-        reader.read_line(&mut request).await?;
-        //Replace Host
-        let mut host = String::new();
-        reader.read_line(&mut host).await?;
-        host = "Host: 172.253.115.91\r\n".to_owned();
+fn main() -> Result<(), std::io::Error> {
+    let listener = TcpListener::bind("127.0.0.1:7878")?;
+    let pool = ThreadPool::new(3)?;
 
-        request.push_str(&host);
-        loop {
-            reader.read_line(&mut request).await?;
-            if request.ends_with("\r\n\r\n") {
-                break;
-            }
-        }
-        println!("-------------------------");
-        println!("request: {:?}", request);
-        //Save request on log.txt
-        write_log_file(&request)?;
-        //Pop new server ip
-        let ip_server: String = rrb.pop_front().unwrap();
-        let ip_server_c = ip_server.clone();
+    for stream in listener.incoming() {
+        match stream {
+            Ok(st) => {
+                pool.execute(|| {                    
+                    handle_connection(st);
 
-        //Server ip conection (http comunication)
-        let conection = TcpStream::connect(ip_server).await;
-
-        match conection {
-            Ok(mut server) => {
-                server.write_all(request.as_bytes()).await?;
-                let mut reader = BufReader::new(server);
-                let mut response = String::new();
-                reader.read_line(&mut response).await?;
-                loop {
-                    reader.read_line(&mut response).await?;
-                    if response.ends_with("\r\n\r\n") {
-                        break;
-                    }
-                }
-                println!("-------------------------");
-                println!("response: {:?}", response);
-
-                let mut cursor = Cursor::new(reader.buffer());
-                let mut body = vec![];
-                loop {
-                    let num_bytes = cursor
-                        .read_until(b'-', &mut body)
-                        .await
-                        .expect("reading from cursor won't fail");
-
-                    if num_bytes == 0 {
-                        break;
-                    }
-                }
-                println!("-------------------------");
-                let b = String::from_utf8(body)?;
-                println!("body = {:?}", b);
-
-                response.push_str(&b);
-                stream.write_all(response.as_bytes()).await?;
-                rrb.push_back(ip_server_c);
-                println!("-------------------------");
-                println!("{:?}", rrb);
-            }
-            Err(err) => {
-                println!("Internal error: {}", err);
-                let response = String::from("HTTP/1.1 500 Internal Server Error\r\n\r\n");
-
-                stream.write_all(response.as_bytes()).await?;
-                //Add to end ip server
-                rrb.push_back(ip_server_c);
-                println!("-------------------------");
-                println!("{:?}", rrb);
-            }
+                });
+            },
+            Err(_) => continue,
         }
     }
-
-    Ok(())
-}
-
-fn read_config_file() -> Result<Vec<String>> {
-    let data = fs::read("./files/config.txt").expect("Unable to read file");
-
-    let ips_data = String::from_utf8(data)?;
-    let ips = ips_data.split("\n").map(|s| s.to_owned()).collect();
-
-    Ok(ips)
-}
-
-fn write_log_file(data: &String) -> Result<()> {
-    let old_text = fs::read("./files/log.txt").expect("Unable to read file");
-    let mut old_data = String::from_utf8(old_text)?;
-    old_data.push_str(data);
-    fs::write("./files/log.txt", old_data).expect("Unable to write file");
-
     Ok(())
 }
