@@ -1,46 +1,82 @@
 use std::fs;
 use std::io::{prelude::*, BufReader};
 use std::net::{TcpListener, TcpStream};
-use std::thread;
-use std::time;
 
+use reverse_proxy_lb::config::{IP_LISTENER, PORT};
 use reverse_proxy_lb::threadpool::ThreadPool;
 
-fn handle_connection(mut stream: TcpStream) {
-    let buf_reader = BufReader::new(&mut stream);
-    let request_line = buf_reader.lines().next().unwrap().unwrap();
+fn write_log_file(request: &String) -> Result<(), std::io::Error> {
+    let mut old_text = fs::read_to_string("./files/log.txt")?;
 
-    let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
-        ("HTTP/1.1 200 OK", "./files/hello.html")
-    } else {
-        ("HTTP/1.1 404 NOT FOUND", "./files/404.html")
-    };
+    old_text.push_str(&request);
+    fs::write("./files/log.txt", old_text)?;
 
-    let contents = fs::read_to_string(filename).unwrap();
-    let length = contents.len();
+    Ok(())
+}
 
-    let response =
-        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+fn read_request(
+    mut buf_reader: BufReader<&TcpStream>,
+    ip_server: &String,
+) -> Result<String, std::io::Error> {
+    let mut request = String::new();
+    buf_reader.read_line(&mut request)?;
+    let mut host = String::new();
+    buf_reader.read_line(&mut host)?;
 
-    stream.write_all(response.as_bytes()).unwrap();
-    //let ten_millis = time::Duration::from_millis(10000);
-    //thread::sleep(ten_millis);
- 
+    host = format!("Host: {}\r\n", ip_server);
+    request.push_str(&host);
+    loop {
+        buf_reader.read_line(&mut request)?;
+        if request.ends_with("\r\n\r\n") {
+            break;
+        }
+    }
+
+    Ok(request)
+}
+
+fn handle_connection(mut stream: TcpStream, ip_server: &String) {
+    let buf_reader = BufReader::new(&stream);
+    let request = read_request(buf_reader, ip_server);
+
+    match request {
+        Ok(rq) => match write_log_file(&rq) {
+            _ => {
+                let connection = TcpStream::connect(&ip_server);
+                match connection {
+                    Ok(mut cn) => {
+                        let mut response = Vec::new();
+                        cn.read_to_end(&mut response).unwrap();
+                        stream.write_all(&response).unwrap();
+                    }
+                    Err(_) => {
+                        let response = "HTTP/1.1 500 Internal Server Error\r\n\r\n";
+                        stream.write_all(response.as_bytes()).unwrap();
+                    }
+                }
+            }
+        },
+        Err(_) => {
+            let response = "HTTP/1.1 400 Bad Request\r\n\r\n";
+            stream.write_all(response.as_bytes()).unwrap();
+        }
+    }
+
     stream.flush().unwrap();
 }
 
 fn main() -> Result<(), std::io::Error> {
-    let listener = TcpListener::bind("127.0.0.1:7878")?;
+    let addr_listener = format!("{}:{}", IP_LISTENER, PORT);
+    let listener = TcpListener::bind(addr_listener)?;
     let pool = ThreadPool::new(3)?;
 
     for stream in listener.incoming() {
         match stream {
             Ok(st) => {
-                pool.execute(|| {                    
-                    handle_connection(st);
-
+                pool.execute(|ip| {
+                    handle_connection(st, ip);
                 });
-            },
+            }
             Err(_) => continue,
         }
     }
