@@ -66,10 +66,14 @@ async fn main() -> Result<()> {
                 server.read_to_end(&mut response).await?;
 
                 println!("-------------------------");
-                println!("buffer_response = {:?}", response);
+                //println!("buffer_response = {:?}", response);
                 println!("-------------------------");
 
-                stream.write_all(&response).await?;
+                let responsing = stream.write_all(&response).await;
+                match responsing {
+                    Ok(()) => println!("Sent"),
+                    Err(err) => println!("Can't send: {:?}", err),
+                }
 
                 rrb.push_back(ip_server);
                 println!("-------------------------");
@@ -86,7 +90,6 @@ async fn main() -> Result<()> {
                 println!("{:?}", rrb);
             }
         }
-        thread::sleep(Duration::from_millis(2000));
     }
 
     Ok(())
