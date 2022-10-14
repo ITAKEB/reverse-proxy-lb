@@ -78,8 +78,8 @@ async fn main() -> Result<()> {
                 println!("-------------------------");
 
                 let lines: Vec<String> = response.split("\r\n").map(|s| s.to_owned()).collect();
-                for i in 1..lines.len() {
-                    let (k, v) = lines[i].split_once(':').unwrap_or(("response", &lines[i]));
+                for i in 0..lines.len() - 1 {
+                    let (k, v) = lines[i].split_once(':').unwrap_or(("response_code", &lines[0]));
 
                     headers.insert(k.to_lowercase(), v.trim().to_string());
                 }
