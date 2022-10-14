@@ -1,9 +1,9 @@
 use anyhow::*;
 
+use std::collections::HashMap;
+use std::fs;
 use std::result::Result::Ok;
-use std::time::Duration;
 use std::{borrow::BorrowMut, collections::VecDeque};
-use std::{fs, thread};
 use tokio::{
     io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader},
     net::{TcpListener, TcpStream},
@@ -61,15 +61,55 @@ async fn main() -> Result<()> {
         match conection {
             Ok(mut server) => {
                 server.write_all(request.as_bytes()).await?;
+                let srv = server.borrow_mut();
 
-                let mut response = Vec::new();
-                server.read_to_end(&mut response).await?;
+                let mut reader = BufReader::new(srv);
+                let mut response = String::new();
+                let mut headers: HashMap<String, String> = HashMap::new();
+                reader.read_line(&mut response).await?;
+                loop {
+                    reader.read_line(&mut response).await?;
+                    if response.ends_with("\r\n\r\n") {
+                        break;
+                    }
+                }
+                println!("-------------------------");
+                println!("response = {:?}", response);
+                println!("-------------------------");
+
+                let lines: Vec<String> = response.split("\r\n").map(|s| s.to_owned()).collect();
+                for i in 1..lines.len() {
+                    let (k, v) = lines[i].split_once(':').unwrap_or(("response", &lines[i]));
+
+                    headers.insert(k.to_lowercase(), v.trim().to_string());
+                }
 
                 println!("-------------------------");
-                //println!("buffer_response = {:?}", response);
+                println!("headers = {:?}", headers);
                 println!("-------------------------");
 
-                let responsing = stream.write_all(&response).await;
+                //let mut response = Vec::new();
+                let header = headers.get("content-length");
+
+                let content_len = match header {
+                    Some(s) => s,
+                    None => "0",
+                };
+
+                println!("response len = {:?}", response.as_bytes().len());
+                println!("content len = {:?}", content_len);
+
+                let mut body = vec![0; content_len.parse().unwrap_or(0)];
+
+                reader.read_exact(&mut body).await?;
+
+                println!("-------------------------");
+                println!("buffer_body len = {:?}", body.len());
+                println!("-------------------------");
+
+                let response_bytes = [response.as_bytes(), &body].concat();
+                let responsing = stream.write_all(&response_bytes).await;
+
                 match responsing {
                     Ok(()) => println!("Sent"),
                     Err(err) => println!("Can't send: {:?}", err),
