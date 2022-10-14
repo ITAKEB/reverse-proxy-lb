@@ -62,10 +62,10 @@ async fn main() -> Result<()> {
             Ok(mut server) => {
                 server.write_all(request.as_bytes()).await?;
                 let srv = server.borrow_mut();
-
+                //Read response
                 let mut reader = BufReader::new(srv);
                 let mut response = String::new();
-                let mut headers: HashMap<String, String> = HashMap::new();
+
                 reader.read_line(&mut response).await?;
                 loop {
                     reader.read_line(&mut response).await?;
@@ -76,10 +76,13 @@ async fn main() -> Result<()> {
                 println!("-------------------------");
                 println!("response = {:?}", response);
                 println!("-------------------------");
-
+                //Save headers
+                let mut headers: HashMap<String, String> = HashMap::new();
                 let lines: Vec<String> = response.split("\r\n").map(|s| s.to_owned()).collect();
                 for i in 0..lines.len() - 1 {
-                    let (k, v) = lines[i].split_once(':').unwrap_or(("response_code", &lines[0]));
+                    let (k, v) = lines[i]
+                        .split_once(':')
+                        .unwrap_or(("response_code", &lines[0]));
 
                     headers.insert(k.to_lowercase(), v.trim().to_string());
                 }
@@ -88,7 +91,7 @@ async fn main() -> Result<()> {
                 println!("headers = {:?}", headers);
                 println!("-------------------------");
 
-                //let mut response = Vec::new();
+                //Search content-len body
                 let header = headers.get("content-length");
 
                 let content_len = match header {
@@ -98,7 +101,7 @@ async fn main() -> Result<()> {
 
                 println!("response len = {:?}", response.as_bytes().len());
                 println!("content len = {:?}", content_len);
-
+                //Create byte array to save content_body with especific size
                 let mut body = vec![0; content_len.parse().unwrap_or(0)];
 
                 reader.read_exact(&mut body).await?;
