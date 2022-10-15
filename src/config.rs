@@ -1,4 +1,3 @@
-pub const IP_SERVERS: &'static [&'static str] = &["1.0.0.0", "2.0.0.0", "3.0.0.0"];
-pub const IP_DATABASE: &str = "0.0.0.0";
-pub const IP_LISTENER: &str = "0.0.0.0";
-pub const PORT: &str = "8080";
+pub const IP_SERVERS: &'static [&'static str] = &["127.0.0.1:8000", "127.0.0.1:8000", "127.0.0.1:8000"];
+pub const IP_LISTENER: &str = "127.0.0.1:8080";
+pub const NUM_THREADS: usize = 3;

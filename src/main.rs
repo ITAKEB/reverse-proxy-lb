@@ -1,23 +1,14 @@
 use std::net::TcpListener;
 
-use reverse_proxy_lb::config::{IP_LISTENER, PORT};
-use reverse_proxy_lb::threadpool::ThreadPool;
+use reverse_proxy_lb::config::{ IP_LISTENER, NUM_THREADS};
 use reverse_proxy_lb::responser::handle_connection;
+use reverse_proxy_lb::threadpool::ThreadPool;
 
 fn main() -> Result<(), std::io::Error> {
-    let addr_listener = format!("{}:{}", IP_LISTENER, PORT);
-    let listener = TcpListener::bind(addr_listener)?;
-    let pool = ThreadPool::new(3)?;
+    let listener = TcpListener::bind(IP_LISTENER)?;
+    let pool = ThreadPool::new(NUM_THREADS);
 
-    for stream in listener.incoming() {
-        match stream {
-            Ok(st) => {
-                pool.execute(|ip| {
-                    handle_connection(st, ip);
-                });
-            }
-            Err(_) => continue,
-        }
-    }
+    handle_connection(pool, listener);
+
     Ok(())
 }
