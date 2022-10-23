@@ -2,11 +2,12 @@ use std::collections::HashMap;
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::net::TcpStream;
 
-pub fn read_request(
-    mut st_client: &TcpStream,
+pub fn read_response(
+    mut stream: &TcpStream,
 ) -> Result<(String, HashMap<String, String>, Vec<u8>), std::io::Error> {
-    let mut buf_reader = BufReader::new(&mut st_client);
+    let mut buf_reader = BufReader::new(&mut stream);
     let mut req: String = String::new();
+    //let mut body: Vec<u8> = Vec::new();
     let mut req_head: String = String::new();
     buf_reader.read_line(&mut req_head)?;
     buf_reader.read_line(&mut req_head)?;
@@ -50,15 +51,12 @@ fn parse_request(request: &String) -> HashMap<String, String> {
     headers
 }
 
-pub fn write_request(
+pub fn write_response(
     req_head: &mut String,
     headers: &mut HashMap<String, String>,
     st_server: &TcpStream,
-    ip: String,
     body: Vec<u8>,
 ) {
-    remove_header(headers);
-    headers.insert("host".to_string(), ip);
     let req_bytes = concat_req(req_head, headers, body);
     let mut writer = BufWriter::new(st_server);
     let size = req_bytes.len();
@@ -70,7 +68,7 @@ pub fn write_request(
             if let Ok(bytes_written) = writer.write(&chunk[pos..]) {
                 pos += bytes_written;
                 if let Err(_) = writer.flush() {
-                    println!("Failed to flush request buffer");
+                    println!("Failed to flush request buffer responser");
                     return;
                 }
             } else {

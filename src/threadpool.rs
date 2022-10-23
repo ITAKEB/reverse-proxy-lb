@@ -1,8 +1,8 @@
+use std::sync::mpsc::{Receiver, SyncSender};
 use std::{
     sync::{mpsc, Arc, Mutex},
     thread,
 };
-use std::sync::mpsc::{ SyncSender, Receiver };
 
 use crate::config::IP_SERVERS;
 
@@ -26,18 +26,10 @@ impl ThreadPool {
         let mut workers = Vec::with_capacity(size);
 
         for id in 0..size {
-            workers.push(
-                Worker::new(
-                    id, 
-                    Arc::clone(&receiver),
-                    //Arc::clone(&mux_ip_servers)
-                    ));
+            workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
 
-        ThreadPool { 
-            workers, 
-            sender 
-        }
+        ThreadPool { workers, sender }
     }
 
     pub fn execute<F>(&self, f: F)
@@ -57,9 +49,8 @@ impl Worker {
             if let Ok(lock) = receiver.lock() {
                 if let Ok(job) = lock.recv() {
                     drop(lock);
-                    job();
                     println!("Executing job in Worker: {id}");
-
+                    job();
                 } else {
                     println!("Job never was received");
                 }
@@ -68,10 +59,7 @@ impl Worker {
             }
         });
 
-        Worker { 
-            id, 
-            thread 
-        }
+        Worker { id, thread }
     }
 }
 
