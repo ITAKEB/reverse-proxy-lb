@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::net::TcpStream;
+use std::fs;
 
 pub fn read_request(
     mut st_client: &TcpStream,
 ) -> Result<(String, HashMap<String, String>, Vec<u8>), std::io::Error> {
+
     let mut buf_reader = BufReader::new(&mut st_client);
     let mut req: String = String::new();
     let mut req_head: String = String::new();
@@ -19,6 +21,7 @@ pub fn read_request(
         }
     }
 
+    write_req_log(&req_head, &req, "Request Client".to_string());
     let headers = parse_request(&req);
     let content_length = get_content_length(&headers);
     let mut body = vec![0; content_length];
@@ -57,6 +60,12 @@ pub fn write_request(
     ip: String,
     body: Vec<u8>,
 ) {
+    let mut headers_str = String::new();
+    for (key, value) in headers.clone() {
+        headers_str.push_str(&format!("{}{}\r\n", key, value));
+    }
+
+    write_req_log(&req_head, &headers_str, "Request Proxy".to_string());
     remove_header(headers);
     headers.insert("host".to_string(), ip);
     let req_bytes = concat_req(req_head, headers, body);
@@ -81,13 +90,14 @@ pub fn write_request(
     }
 }
 
-pub fn remove_header(req: &mut HashMap<String, String>) {
+fn remove_header(req: &mut HashMap<String, String>) {
     req.remove(&"transfer-encoding".to_string());
     req.remove(&"accept-encoding".to_string());
     req.remove(&"content-encoding".to_string());
+    req.remove(&"upgrade".to_string());
 }
 
-pub fn hashmap_to_vec(bytes: &mut Vec<u8>, headers: &mut HashMap<String, String>) {
+fn hashmap_to_vec(bytes: &mut Vec<u8>, headers: &mut HashMap<String, String>) {
     for (k, v) in headers {
         let mut line = format!("{k}:{v}\r\n").as_bytes().to_vec();
         bytes.append(&mut line);
@@ -97,7 +107,7 @@ pub fn hashmap_to_vec(bytes: &mut Vec<u8>, headers: &mut HashMap<String, String>
     bytes.push(0x0A);
 }
 
-pub fn concat_req(
+fn concat_req(
     req_head: &mut String,
     headers: &mut HashMap<String, String>,
     mut body: Vec<u8>,
@@ -106,4 +116,14 @@ pub fn concat_req(
     hashmap_to_vec(&mut req_bytes, headers);
     req_bytes.append(&mut body);
     req_bytes
+}
+
+pub fn write_req_log(req: &String, req_head: &String,  type_req: String) {
+    let req_total = format!("{}\r\n{}{}", type_req, req, req_head);
+    if let Ok(mut old_text) = fs::read_to_string("./files/log.txt") {
+        old_text.push_str(&req_total);
+        if let Err(_) = fs::write("./files/log.txt", old_text) {
+            println!("Failed write log");
+        }
+    }
 }

@@ -8,7 +8,7 @@ use crate::config::IP_SERVERS;
 
 struct Worker {
     id: usize,
-    thread: thread::JoinHandle<()>,
+    thread: Option<thread::JoinHandle<()>>,
 }
 
 pub struct ThreadPool {
@@ -59,7 +59,7 @@ impl Worker {
             }
         });
 
-        Worker { id, thread }
+        Worker { id, thread: Some(thread) }
     }
 }
 
@@ -73,4 +73,16 @@ pub fn read_ip_server() -> (SyncSender<&'static str>, Arc<Mutex<Receiver<&'stati
     let pop = Arc::new(Mutex::new(receiver));
 
     (push, pop)
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+        for worker in &mut self.workers {
+            println!("Shutting down worker {}", worker.id);
+
+            if let Some(thread) = worker.thread.take() {
+                thread.join().unwrap();
+            }
+        }
+    }
 }

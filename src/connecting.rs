@@ -7,7 +7,7 @@ use std::sync::{
 use std::time;
 
 use crate::request::{read_request, write_request};
-use crate::responser::{read_response, write_response};
+use crate::responser::{read_response, write_response, write_error};
 use crate::threadpool::ThreadPool;
 
 fn connect_to_server(ip: &str, retries: u16) -> Result<TcpStream, std::io::Error> {
@@ -28,7 +28,7 @@ fn connect_to_server(ip: &str, retries: u16) -> Result<TcpStream, std::io::Error
 }
 
 pub fn http_connect(
-    st_client: TcpStream,
+    st_client: &mut TcpStream,
     push: SyncSender<&'static str>,
     pop: Arc<Mutex<Receiver<&'static str>>>,
 ) {
@@ -52,13 +52,13 @@ pub fn http_connect(
                                 Ok((mut req_head, mut header, body)) => {
                                     write_response(&mut req_head, &mut header, &st_client, body);
                                 }
-                                Err(_) => println!("Response does not read"),
+                                Err(_) => {write_error("HTTP/1.1 503 502 Bad Gateway".to_string(), st_client)},
                             }
                         }
-                        Err(_) => println!("Failed to connect to web server"),
+                        Err(_) => {write_error("HTTP/1.1 503 Service Unavailable".to_string(), st_client)}
                     }
                 }
-                Err(_) => println!("Failed to read request"),
+                Err(_) => {write_error("HTTP/1.1 400 Bad Request".to_string(), st_client)},
             }
         }
     }
@@ -72,12 +72,12 @@ pub fn handle_connection(
 ) {
     for stream in listener.incoming() {
         match stream {
-            Ok(st) => {
+            Ok(mut st) => {
                 let pop_clone = Arc::clone(pop);
                 let push_clone = push.clone();
 
-                pool.execute(|| {
-                    http_connect(st, push_clone, pop_clone);
+                pool.execute(move || {
+                    http_connect(&mut st, push_clone, pop_clone);
                 });
             }
             Err(_) => println!("Stream does not capture"),

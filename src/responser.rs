@@ -7,7 +7,6 @@ pub fn read_response(
 ) -> Result<(String, HashMap<String, String>, Vec<u8>), std::io::Error> {
     let mut buf_reader = BufReader::new(&mut stream);
     let mut req: String = String::new();
-    //let mut body: Vec<u8> = Vec::new();
     let mut req_head: String = String::new();
     buf_reader.read_line(&mut req_head)?;
     buf_reader.read_line(&mut req_head)?;
@@ -20,7 +19,7 @@ pub fn read_response(
         }
     }
 
-    let headers = parse_request(&req);
+    let headers = parse_response(&req);
     let content_length = get_content_length(&headers);
     let mut body = vec![0; content_length];
 
@@ -36,7 +35,7 @@ fn get_content_length(req: &HashMap<String, String>) -> usize {
     }
 }
 
-fn parse_request(request: &String) -> HashMap<String, String> {
+fn parse_response(request: &String) -> HashMap<String, String> {
     let mut headers: HashMap<String, String> = HashMap::new();
     let lines: Vec<String> = request.split("\r\n").map(|s| s.to_owned()).collect();
 
@@ -57,7 +56,7 @@ pub fn write_response(
     st_server: &TcpStream,
     body: Vec<u8>,
 ) {
-    let req_bytes = concat_req(req_head, headers, body);
+    let req_bytes = concat_resp(req_head, headers, body);
     let mut writer = BufWriter::new(st_server);
     let size = req_bytes.len();
     let buff_size = if size < 2048 { size } else { size / 1024 };
@@ -79,13 +78,7 @@ pub fn write_response(
     }
 }
 
-pub fn remove_header(req: &mut HashMap<String, String>) {
-    req.remove(&"transfer-encoding".to_string());
-    req.remove(&"accept-encoding".to_string());
-    req.remove(&"content-encoding".to_string());
-}
-
-pub fn hashmap_to_vec(bytes: &mut Vec<u8>, headers: &mut HashMap<String, String>) {
+fn hashmap_to_vec(bytes: &mut Vec<u8>, headers: &mut HashMap<String, String>) {
     for (k, v) in headers {
         let mut line = format!("{k}:{v}\r\n").as_bytes().to_vec();
         bytes.append(&mut line);
@@ -95,7 +88,7 @@ pub fn hashmap_to_vec(bytes: &mut Vec<u8>, headers: &mut HashMap<String, String>
     bytes.push(0x0A);
 }
 
-pub fn concat_req(
+fn concat_resp(
     req_head: &mut String,
     headers: &mut HashMap<String, String>,
     mut body: Vec<u8>,
@@ -104,4 +97,10 @@ pub fn concat_req(
     hashmap_to_vec(&mut req_bytes, headers);
     req_bytes.append(&mut body);
     req_bytes
+}
+
+pub fn write_error(status_line: String, st_client: &mut TcpStream) {
+    if let Err(_) = st_client.write(status_line.as_bytes()) {
+        println!("Failed to send error response");
+    }
 }
