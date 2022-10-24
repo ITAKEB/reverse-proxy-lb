@@ -1,12 +1,11 @@
 use std::collections::HashMap;
+use std::fs;
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::net::TcpStream;
-use std::fs;
 
 pub fn read_request(
     mut st_client: &TcpStream,
 ) -> Result<(String, HashMap<String, String>, Vec<u8>), std::io::Error> {
-
     let mut buf_reader = BufReader::new(&mut st_client);
     let mut req: String = String::new();
     let mut req_head: String = String::new();
@@ -69,21 +68,21 @@ pub fn write_request(
     remove_header(headers);
     headers.insert("host".to_string(), ip);
     let req_bytes = concat_req(req_head, headers, body);
-    let mut writer = BufWriter::new(st_server);
+    let mut buf_writer = BufWriter::new(st_server);
     let size = req_bytes.len();
     let buff_size = if size < 2048 { size } else { size / 1024 };
 
-    for chunk in req_bytes.chunks(buff_size) {
-        let mut pos = 0;
-        while pos < chunk.len() {
-            if let Ok(bytes_written) = writer.write(&chunk[pos..]) {
-                pos += bytes_written;
-                if let Err(_) = writer.flush() {
-                    println!("Failed to flush request buffer");
+    for chk in req_bytes.chunks(buff_size) {
+        let mut total_bytes_written = 0;
+        while total_bytes_written < chk.len() {
+            if let Ok(bytes_written) = buf_writer.write(&chk[total_bytes_written..]) {
+                total_bytes_written += bytes_written;
+                if let Err(_) = buf_writer.flush() {
+                    println!("Failed to flush BufWriter");
                     return;
                 }
             } else {
-                println!("Failed to write request");
+                println!("Failed to write request for Web Server");
                 return;
             }
         }
@@ -118,7 +117,7 @@ fn concat_req(
     req_bytes
 }
 
-pub fn write_req_log(req: &String, req_head: &String,  type_req: String) {
+pub fn write_req_log(req: &String, req_head: &String, type_req: String) {
     let req_total = format!("{}\r\n{}{}", type_req, req, req_head);
     if let Ok(mut old_text) = fs::read_to_string("./files/log.txt") {
         old_text.push_str(&req_total);

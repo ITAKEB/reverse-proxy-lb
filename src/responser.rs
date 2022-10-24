@@ -1,7 +1,7 @@
 use std::collections::HashMap;
+use std::fs;
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::net::TcpStream;
-use std::fs;
 
 pub fn read_response(
     mut stream: &TcpStream,
@@ -59,17 +59,17 @@ pub fn write_response(
     body: Vec<u8>,
 ) {
     let req_bytes = concat_resp(req_head, headers, body);
-    let mut writer = BufWriter::new(st_server);
+    let mut buf_writer = BufWriter::new(st_server);
     let size = req_bytes.len();
     let buff_size = if size < 2048 { size } else { size / 1024 };
 
-    for chunk in req_bytes.chunks(buff_size) {
-        let mut pos = 0;
-        while pos < chunk.len() {
-            if let Ok(bytes_written) = writer.write(&chunk[pos..]) {
-                pos += bytes_written;
-                if let Err(_) = writer.flush() {
-                    println!("Failed to flush request buffer responser");
+    for chk in req_bytes.chunks(buff_size) {
+        let mut total_bytes_written = 0;
+        while total_bytes_written < chk.len() {
+            if let Ok(bytes_written) = buf_writer.write(&chk[total_bytes_written..]) {
+                total_bytes_written += bytes_written;
+                if let Err(_) = buf_writer.flush() {
+                    println!("Failed to flush BufWriter");
                     return;
                 }
             } else {
@@ -107,8 +107,7 @@ pub fn write_error(status_line: String, st_client: &mut TcpStream) {
     }
 }
 
-
-fn write_resp_log(req: &String, req_head: &String,  type_req: String) {
+fn write_resp_log(req: &String, req_head: &String, type_req: String) {
     let req_total = format!("\r\n{}\r\n{}{}", type_req, req, req_head);
     if let Ok(mut old_text) = fs::read_to_string("./files/log.txt") {
         old_text.push_str(&req_total);

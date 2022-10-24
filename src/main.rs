@@ -7,6 +7,7 @@ use reverse_proxy_lb::threadpool::{read_ip_server, ThreadPool};
 fn main() {
     match TcpListener::bind(IP_LISTENER) {
         Ok(listener) => {
+            println!("Listening in {}", IP_LISTENER);
             let pool = ThreadPool::new(NUM_THREADS);
             let (push, pop) = read_ip_server();
             handle_connection(pool, listener, &push, &pop);

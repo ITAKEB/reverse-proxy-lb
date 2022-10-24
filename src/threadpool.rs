@@ -49,7 +49,6 @@ impl Worker {
             if let Ok(lock) = receiver.lock() {
                 if let Ok(job) = lock.recv() {
                     drop(lock);
-                    println!("Executing job in Worker: {id}");
                     job();
                 } else {
                     println!("Job never was received");
@@ -59,7 +58,10 @@ impl Worker {
             }
         });
 
-        Worker { id, thread: Some(thread) }
+        Worker {
+            id,
+            thread: Some(thread),
+        }
     }
 }
 

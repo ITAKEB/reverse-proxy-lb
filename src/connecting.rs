@@ -7,7 +7,7 @@ use std::sync::{
 use std::time;
 
 use crate::request::{read_request, write_request};
-use crate::responser::{read_response, write_response, write_error};
+use crate::responser::{read_response, write_error, write_response};
 use crate::threadpool::ThreadPool;
 
 fn connect_to_server(ip: &str, retries: u16) -> Result<TcpStream, std::io::Error> {
@@ -37,28 +37,29 @@ pub fn http_connect(
             drop(lock);
             push.send(ip_server.clone()).unwrap();
             match read_request(&st_client) {
-                Ok((mut req_head, mut header, body)) => {
-                    let st_server = connect_to_server(&ip_server, 3);
-                    match st_server {
-                        Ok(server) => {
-                            write_request(
-                                &mut req_head,
-                                &mut header,
-                                &server,
-                                ip_server.to_string(),
-                                body,
-                            );
-                            match read_response(&server) {
-                                Ok((mut req_head, mut header, body)) => {
-                                    write_response(&mut req_head, &mut header, &st_client, body);
-                                }
-                                Err(_) => {write_error("HTTP/1.1 503 502 Bad Gateway".to_string(), st_client)},
+                Ok((mut req_head, mut header, body)) => match connect_to_server(&ip_server, 3) {
+                    Ok(server) => {
+                        write_request(
+                            &mut req_head,
+                            &mut header,
+                            &server,
+                            ip_server.to_string(),
+                            body,
+                        );
+                        match read_response(&server) {
+                            Ok((mut req_head, mut header, body)) => {
+                                write_response(&mut req_head, &mut header, &st_client, body);
+                            }
+                            Err(_) => {
+                                write_error("HTTP/1.1 502 Bad Gateway".to_string(), st_client)
                             }
                         }
-                        Err(_) => {write_error("HTTP/1.1 503 Service Unavailable".to_string(), st_client)}
                     }
-                }
-                Err(_) => {write_error("HTTP/1.1 400 Bad Request".to_string(), st_client)},
+                    Err(_) => {
+                        write_error("HTTP/1.1 503 Service Unavailable".to_string(), st_client)
+                    }
+                },
+                Err(_) => write_error("HTTP/1.1 400 Bad Request".to_string(), st_client),
             }
         }
     }
