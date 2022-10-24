@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::net::TcpStream;
+use std::fs;
 
 pub fn read_response(
     mut stream: &TcpStream,
@@ -19,6 +20,7 @@ pub fn read_response(
         }
     }
 
+    write_resp_log(&req_head, &req, "Response Web Server".to_string());
     let headers = parse_response(&req);
     let content_length = get_content_length(&headers);
     let mut body = vec![0; content_length];
@@ -102,5 +104,16 @@ fn concat_resp(
 pub fn write_error(status_line: String, st_client: &mut TcpStream) {
     if let Err(_) = st_client.write(status_line.as_bytes()) {
         println!("Failed to send error response");
+    }
+}
+
+
+fn write_resp_log(req: &String, req_head: &String,  type_req: String) {
+    let req_total = format!("\r\n{}\r\n{}{}", type_req, req, req_head);
+    if let Ok(mut old_text) = fs::read_to_string("./files/log.txt") {
+        old_text.push_str(&req_total);
+        if let Err(_) = fs::write("./files/log.txt", old_text) {
+            println!("Failed write log");
+        }
     }
 }
