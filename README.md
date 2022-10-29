@@ -87,7 +87,7 @@ El proxy es capaz de responder a algunas peticiones simultáneas sin bloquearse.
 Para un futuro desarrollo se desea mejorar la forma en que el balanceador de carga es usado. Es decir, implementar más políticas para mejorar la asignación, como conocer el estado actual de los servidores web y de esta forma asignar más tareas a servidores web más rápidos y se encuentren con menos peticiones en curso.
 
 ## Referencias
-[1] https://www.nginx.com/resources/glossary/reverse-proxy-server/
-[2] https://avinetworks.com/glossary/round-robin-load-balancing/
-[3]  https://applied-math-coding.medium.com/implementing-a-basic-thread-pool-in-rust-cd8a00363942
-[4] https://doc.rust-lang.org/book/ch20-02-multithreaded.html
+- [1] https://www.nginx.com/resources/glossary/reverse-proxy-server/
+- [2] https://avinetworks.com/glossary/round-robin-load-balancing/
+- [3] https://applied-math-coding.medium.com/implementing-a-basic-thread-pool-in-rust-cd8a00363942
+- [4] https://doc.rust-lang.org/book/ch20-02-multithreaded.html
