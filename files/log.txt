@@ -1,66 +1,727 @@
-GET / HTTP/1.1
-Host: 172.253.115.91
-Connection: keep-alive
-sec-ch-ua: "Google Chrome";v="105", "Not)A;Brand";v="8", "Chromium";v="105"
-sec-ch-ua-mobile: ?0
-sec-ch-ua-platform: "Linux"
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Sec-Fetch-Site: none
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
-Accept-Encoding: gzip, deflate, br
-Accept-Language: en
+Request Proxy
+GET /favicon.ico HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0
+dnt1
+accept-encodinggzip, deflate, br
+acceptimage/avif,image/webp,*/*
+refererhttp://127.0.0.1:8080/
+sec-fetch-modeno-cors
+sec-fetch-sitesame-origin
+accept-languageen-US,en;q=0.5
+connectionkeep-alive
+sec-fetch-destimage
+response_codeAccept: image/avif,image/webp,*/*
 
-GET / HTTP/1.1
-Host: 172.253.115.91
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Fri, 21 Oct 2022 14:28:25 GMT
+ETag: W/"14e3-183faf1f89c"
+Content-Type: image/png
+Content-Length: 5347
+Date: Mon, 24 Oct 2022 22:52:28 GMT
 Connection: keep-alive
-sec-ch-ua: "Google Chrome";v="105", "Not)A;Brand";v="8", "Chromium";v="105"
-sec-ch-ua-mobile: ?0
-sec-ch-ua-platform: "Linux"
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Sec-Fetch-Site: none
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
-Accept-Encoding: gzip, deflate, br
-Accept-Language: en
+Keep-Alive: timeout=5
 
-GET / HTTP/1.1
-Host: 172.253.115.91
-Connection: keep-alive
-sec-ch-ua: "Google Chrome";v="105", "Not)A;Brand";v="8", "Chromium";v="105"
-sec-ch-ua-mobile: ?0
-sec-ch-ua-platform: "Linux"
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Sec-Fetch-Site: none
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
-Accept-Encoding: gzip, deflate, br
-Accept-Language: en
 
-GET / HTTP/1.1
-Host: 172.253.115.91
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Fri, 21 Oct 2022 14:28:25 GMT
+ETag: W/"c4e-183faf1f89c"
+Content-Type: image/x-icon
+Content-Length: 3150
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:52:28 GMT
 Connection: keep-alive
-sec-ch-ua: "Google Chrome";v="105", "Not)A;Brand";v="8", "Chromium";v="105"
-sec-ch-ua-mobile: ?0
-sec-ch-ua-platform: "Linux"
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Sec-Fetch-Site: none
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
+Keep-Alive: timeout=5
+
+Request Client
+GET / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
 Accept-Encoding: gzip, deflate, br
-Accept-Language: en
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+If-None-Match: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+
+Request Proxy
+GET / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0
+dnt1
+upgrade-insecure-requests1
+sec-fetch-destdocument
+accept-languageen-US,en;q=0.5
+connectionkeep-alive
+accepttext/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+accept-encodinggzip, deflate, br
+sec-fetch-user?1
+if-none-matchW/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+sec-fetch-sitenone
+response_codeAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+sec-fetch-modenavigate
+
+Response Web Server
+HTTP/1.1 304 Not Modified
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Accept-Ranges: bytes
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Date: Mon, 24 Oct 2022 22:52:31 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+GET /static/js/bundle.js HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+DNT: 1
+Connection: keep-alive
+Referer: http://127.0.0.1:8080/
+Sec-Fetch-Dest: script
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: same-origin
+If-None-Match: W/"1a097e-8Q+eh92HWSY0fejZpEN3Tc1AUyU"
+
+Request Proxy
+GET /static/js/bundle.js HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0
+sec-fetch-destscript
+accept*/*
+accept-encodinggzip, deflate, br
+sec-fetch-modeno-cors
+response_codeAccept: */*
+refererhttp://127.0.0.1:8080/
+accept-languageen-US,en;q=0.5
+sec-fetch-sitesame-origin
+if-none-matchW/"1a097e-8Q+eh92HWSY0fejZpEN3Tc1AUyU"
+dnt1
+connectionkeep-alive
+
+Response Web Server
+HTTP/1.1 304 Not Modified
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Accept-Ranges: bytes
+ETag: W/"1a097e-8Q+eh92HWSY0fejZpEN3Tc1AUyU"
+Date: Mon, 24 Oct 2022 22:52:31 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+Content-Length: 1077502
+Content-Type: application/x-www-form-urlencoded
+Expect: 100-continue
+
+Request Proxy
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+expect100-continue
+content-length1077502
+content-typeapplication/x-www-form-urlencoded
+response_codeAccept: */*
+accept*/*
+
+Response Web Server
+HTTP/1.1 100 Continue
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Security-Policy: default-src 'none'
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 140
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:54:26 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+Content-Length: 1077502
+Content-Type: application/x-www-form-urlencoded
+Expect: 100-continue
+
+Request Proxy
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+content-length1077502
+accept*/*
+response_codeAccept: */*
+content-typeapplication/x-www-form-urlencoded
+expect100-continue
+
+Response Web Server
+HTTP/1.1 100 Continue
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Security-Policy: default-src 'none'
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 140
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:54:33 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+Content-Length: 1077502
+Content-Type: application/x-www-form-urlencoded
+Expect: 100-continue
+
+Request Proxy
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+response_codeAccept: */*
+accept*/*
+content-length1077502
+expect100-continue
+content-typeapplication/x-www-form-urlencoded
+
+Response Web Server
+HTTP/1.1 100 Continue
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Security-Policy: default-src 'none'
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 140
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:54:35 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+Content-Length: 1077502
+Content-Type: application/x-www-form-urlencoded
+Expect: 100-continue
+
+Request Proxy
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+content-length1077502
+accept*/*
+response_codeAccept: */*
+content-typeapplication/x-www-form-urlencoded
+expect100-continue
+
+Response Web Server
+HTTP/1.1 100 Continue
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Security-Policy: default-src 'none'
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 140
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:54:37 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+Content-Length: 1077502
+Content-Type: application/x-www-form-urlencoded
+Expect: 100-continue
+
+Request Proxy
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+expect100-continue
+response_codeAccept: */*
+accept*/*
+content-typeapplication/x-www-form-urlencoded
+content-length1077502
+
+Response Web Server
+HTTP/1.1 100 Continue
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Security-Policy: default-src 'none'
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 140
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:54:41 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+Content-Length: 1077502
+Content-Type: application/x-www-form-urlencoded
+Expect: 100-continue
+
+Request Proxy
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+accept*/*
+content-length1077502
+content-typeapplication/x-www-form-urlencoded
+response_codeAccept: */*
+expect100-continue
+
+Response Web Server
+HTTP/1.1 100 Continue
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Security-Policy: default-src 'none'
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 140
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:55:02 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+Content-Length: 1077502
+Content-Type: application/x-www-form-urlencoded
+Expect: 100-continue
+
+Request Proxy
+POST / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+content-typeapplication/x-www-form-urlencoded
+response_codeAccept: */*
+expect100-continue
+accept*/*
+content-length1077502
+
+Response Web Server
+HTTP/1.1 100 Continue
+
+HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Security-Policy: default-src 'none'
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 140
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:55:06 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:56:10 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:56:18 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+response_codeAccept: */*
+accept*/*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:56:30 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:56:45 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+response_codeAccept: */*
+accept*/*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:57:24 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+HEAD / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:58:08 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+HEAD / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+HEAD / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 22:58:48 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 23:01:35 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 23:01:36 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 23:01:38 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+accept*/*
+response_codeAccept: */*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 23:01:41 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Request Client
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+Accept: */*
+
+Request Proxy
+GET / HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.81.0
+response_codeAccept: */*
+accept*/*
+
+Response Web Server
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: *
+Content-Type: text/html; charset=utf-8
+Accept-Ranges: bytes
+Content-Length: 2622
+ETag: W/"a3e-lYTqW/J/r94xJkFZPH3zv6rHN+E"
+Vary: Accept-Encoding
+Date: Mon, 24 Oct 2022 23:01:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
 
 GET / HTTP/1.1
 Host: 54.174.150.245
