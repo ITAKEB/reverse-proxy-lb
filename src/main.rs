@@ -14,5 +14,4 @@ fn main() {
         }
         Err(_) => println!("Failed to listen in {}", IP_LISTENER),
     }
-    Ok(())
 }
