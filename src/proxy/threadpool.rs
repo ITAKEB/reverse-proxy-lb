@@ -4,7 +4,7 @@ use std::{
     thread,
 };
 
-use crate::config::IP_SERVERS;
+use crate::proxy::config::IP_SERVERS;
 
 struct Worker {
     id: usize,
@@ -37,7 +37,7 @@ impl ThreadPool {
         F: FnOnce() + Send + 'static,
     {
         let job = Box::new(f);
-        if let Err(_) = self.sender.send(job) {
+        if self.sender.send(job).is_err() {
             println!("Error: Did not send job");
         }
     }
