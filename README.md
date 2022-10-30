@@ -2,7 +2,7 @@
 
 ## Contribuidores
 
-- David Jose Cardona Nieves - Alias: El convierte lesbianas
+- David Jose Cardona Nieves
 - Tomas Atehortua Ceferino
 - Danilo Toro Echeverri
 
