@@ -4,6 +4,8 @@ use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::net::TcpStream;
 use crate::cache::filedata::FileData;
 
+use crate::proxy::config::DIR_LOG;
+
 pub fn read_response(
     mut stream: &TcpStream,
 ) -> Result<(String, HashMap<String, String>, Vec<u8>), std::io::Error> {
@@ -179,10 +181,12 @@ pub fn write_error(status_line: String, st_client: &mut TcpStream) {
 
 fn write_resp_log(req: &String, req_head: &String, type_req: String) {
     let req_total = format!("\r\n{}\r\n{}{}", type_req, req, req_head);
-    if let Ok(mut old_text) = fs::read_to_string("./files/log.txt") {
+    if let Ok(mut old_text) = fs::read_to_string(DIR_LOG) {
         old_text.push_str(&req_total);
-        if fs::write("./files/log.txt", old_text).is_err() {
+        if fs::write(DIR_LOG, old_text).is_err() {
             println!("Failed write log");
         }
+    } else {
+        println!("Failed to find {}", DIR_LOG);
     }
 }
