@@ -66,20 +66,33 @@ Una vez recibida la respuesta del servidor web, se la enviamos al cliente. Si en
 
 ## Ejecución
 
-Para ejecutar el proxy se debe hacer lo siguiente:
+### Instalar dependencias
+Para instalar las dependencias necesarias para compilar:
 
 Ofrecer permisos al script bash con el comando:
 ```
-chmod +X ./first-install-and-run.sh
+chmod +x ./first-install-and-run.sh
 ```
 
-El script lo que va a ser es:
+El bash script hace lo siguiente:
 
  - Actualizar el sistema de enlaces de Ubuntu.
  - Instalar `curl`.
  - Instalar el compilador de Rust.
- - Ejecutar el programa.
+ 
+### Ejecutar programa
 
+Para iniciar el programa necesitas hacer:
+
+Ofrecer permisos al script bash con el comando:
+```
+chmod +x ./execute.sh 
+```
+El bash script hace lo siguiente: 
+
+ - Crear archivos necesarios.
+ - Ejecutar prpgrama.
+ 
 ## Conclusiones
 
 El proxy es capaz de responder a algunas peticiones simultáneas sin bloquearse. Por consecuencia, el proxy es capaz de defenderse de algunos ataques de DoS. Además de no ignorar peticiones sin importar que en el momento no puedan ser procesadas..

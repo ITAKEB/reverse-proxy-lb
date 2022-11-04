@@ -10,4 +10,3 @@ curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
 rustup self update
 rustup default stable
 mkdir -p cachefiles
-cargo run --release
