@@ -190,3 +190,29 @@ fn write_resp_log(req: &String, req_head: &String, type_req: String) {
         println!("Failed to find {}", DIR_LOG);
     }
 }
+
+pub fn write_resp_err_log(error: &String, ip: &str) {
+    let text = format!("Response Proxy: {}\r\n{}", ip, error);
+    if let Ok(mut old_text) = fs::read_to_string(DIR_LOG) {
+        old_text.push_str(&text);
+        if fs::write(DIR_LOG, old_text).is_err() {
+            println!("Failed write log");
+        }
+    } else {
+        println!("Failed to find {}", DIR_LOG);
+    }
+
+}
+
+pub fn write_failed_to_connect(st_client: &mut TcpStream) {
+    let status_line = "HTTP/1.1 200 OK";
+    let contents = fs::read_to_string("failed.html").unwrap();
+    let length = contents.len();
+
+    let response =
+        format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+    if st_client.write(response.as_bytes()).is_err() {
+        println!("Failed to send error response");
+    }
+}

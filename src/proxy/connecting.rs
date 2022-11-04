@@ -9,8 +9,8 @@ use std::sync::{
 use std::time;
 use std::path::{PathBuf, Path};
 
-use crate::proxy::request::{read_request, write_request, is_cache_request, parse_cache_info};
-use crate::proxy::responser::{read_response, write_error, write_response};
+use crate::proxy::request::{read_request, write_request, is_cache_request};
+use crate::proxy::responser::{read_response, write_error, write_response, write_failed_to_connect, write_resp_err_log};
 use crate::proxy::threadpool::ThreadPool;
 use crate::cache::metadata::Metadata;
 use super::responser::write_response_from_file;
@@ -35,6 +35,7 @@ pub fn http_connect(
     cache_sender: Sender<FileData>,
     cache_folder: PathBuf,
     ttl: u64,
+    is_cache_available: bool,
     ) {
     if let Ok(lock) = pop.lock() {
         if let Ok(ip_server) = lock.recv() {
@@ -44,16 +45,17 @@ pub fn http_connect(
             if let Ok((mut req_head, mut header, body)) = read_request(st_client) {
 
                 let mut map:HashMap<String, String> = HashMap::new();
-                let info = parse_cache_info(&req_head);
 
-                let file_path = create_file_path(&cache_folder, info.1.clone());
+                let file_path = create_file_path(&cache_folder, req_head.clone());
                 let route = file_path.clone();
 
-                if let Ok(metadata) = Metadata::parse_file(&file_path) {
-                    if !metadata.ttl_check() {
-                        if is_cache_request(&info.0) {
-                            if let Ok(filedata) = FileData::parse_file(file_path, metadata) {
-                                write_response_from_file(st_client, filedata, &mut map);
+                if is_cache_available {
+                    if let Ok(metadata) = Metadata::parse_file(&file_path) {
+                        if !metadata.ttl_check() {
+                            if is_cache_request(&req_head) {
+                                if let Ok(filedata) = FileData::parse_file(file_path, metadata) {
+                                    write_response_from_file(st_client, filedata, &mut map);
+                                } else { handle_file(st_client, ip_server, &mut req_head, &mut header, body, cache_sender, &route, &map, ttl); }
                             } else { handle_file(st_client, ip_server, &mut req_head, &mut header, body, cache_sender, &route, &map, ttl); }
                         } else { handle_file(st_client, ip_server, &mut req_head, &mut header, body, cache_sender, &route, &map, ttl); }
                     } else { handle_file(st_client, ip_server, &mut req_head, &mut header, body, cache_sender, &route, &map, ttl); }
@@ -71,6 +73,7 @@ pub fn handle_connection(
     cache_sender: &Sender<FileData>,
     cache_folder: PathBuf,
     ttl: u64,
+    is_cache_available: bool,
 ) {
     for stream in listener.incoming() {
         match stream {
@@ -87,6 +90,7 @@ pub fn handle_connection(
                         sender,
                         cache,
                         ttl,
+                        is_cache_available,
                     );
                 });
             }
@@ -123,7 +127,14 @@ fn handle_file(
                     let len = body.len();
                     let temp_body = body.clone();
 
-                    if let Ok(filedata) = FileData::default(ttl, len as u64, path.to_path_buf(), temp_body, map.get(&"content-type".to_string()).cloned()) {
+                    if let Ok(filedata) = 
+                        FileData::default(
+                            ttl, 
+                            len as u64, 
+                            path.to_path_buf(), 
+                            temp_body, 
+                            map.get(&"content-type".to_string()).cloned()
+                        ) {
 
                         if cache_sender.send(filedata).is_err() {
                             println!("Failed to queue cache file");
@@ -133,12 +144,16 @@ fn handle_file(
                     write_response(&mut req_head, &mut header, st_client, body);
                 }
                 Err(_) => {
-                    write_error("HTTP/1.1 502 Bad Gateway".to_string(), st_client)
+                    let error = "HTTP/1.1 502 Bad Gateway".to_string();
+                    write_resp_err_log(&error, ip_server);
+                    write_error(error, st_client)
                 }
             }
         }
         Err(_) => {
-            write_error("HTTP/1.1 503 Service Unavailable".to_string(), st_client)
+            let error = "HTTP/1.1 503 Service Unavailable".to_string();
+            write_resp_err_log(&error, ip_server);
+            write_failed_to_connect(st_client);
         }
     }
 }

@@ -12,8 +12,8 @@ pub fn read_request(
     let mut req: String = String::new();
     let mut req_head: String = String::new();
     buf_reader.read_line(&mut req_head)?;
-    buf_reader.read_line(&mut req_head)?;
-    buf_reader.read_line(&mut req_head)?;
+    //buf_reader.read_line(&mut req_head)?;
+    //buf_reader.read_line(&mut req_head)?;
 
     loop {
         buf_reader.read_line(&mut req)?;
@@ -22,7 +22,7 @@ pub fn read_request(
         }
     }
 
-    write_req_log(&req_head, &req, "Request Client".to_string());
+    write_req_log(&req_head, &req, "Request Client".to_string(), &String::new());
     let headers = parse_request(&req);
     let content_length = get_content_length(&headers);
     let mut body = vec![0; content_length];
@@ -55,20 +55,23 @@ fn parse_request(request: &str) -> HashMap<String, String> {
 }
 
 pub fn write_request(
-        req_head: &mut String,
-        headers: &mut HashMap<String, String>,
-        st_server: &TcpStream,
-        ip: String,
-        body: Vec<u8>,
-        ) {
+    req_head: &mut String,
+    headers: &mut HashMap<String, String>,
+    st_server: &TcpStream,
+    ip: String,
+    body: Vec<u8>,
+) {
+    remove_header(headers);
+    //headers.insert("Host".to_string(), ip);
+
+    //req_head.push_str(&format!("Host: {}\r\n", &ip));
     let mut headers_str = String::new();
     for (key, value) in headers.clone() {
-        headers_str.push_str(&format!("{}{}\r\n", key, value));
+        headers_str.push_str(&format!("{}: {}\r\n", key, value));
     }
 
-    write_req_log(req_head, &headers_str, "Request Proxy".to_string());
-    remove_header(headers);
-    headers.insert("host".to_string(), ip);
+    write_req_log(req_head, &headers_str, "Request Proxy".to_string(), &ip);
+
     let req_bytes = concat_req(req_head, headers, body);
     let mut buf_writer = BufWriter::new(st_server);
     let size = req_bytes.len();
@@ -96,6 +99,7 @@ fn remove_header(req: &mut HashMap<String, String>) {
     req.remove(&"accept-encoding".to_string());
     req.remove(&"content-encoding".to_string());
     req.remove(&"upgrade".to_string());
+    //req.remove(&"host".to_string());
 }
 
 fn hashmap_to_vec(bytes: &mut Vec<u8>, headers: &mut HashMap<String, String>) {
@@ -119,8 +123,8 @@ fn concat_req(
     req_bytes
 }
 
-pub fn write_req_log(req: &String, req_head: &String, type_req: String) {
-    let req_total = format!("{}\r\n{}{}", type_req, req, req_head);
+pub fn write_req_log(req: &String, req_head: &String, type_req: String, ip: &String) {
+    let req_total = format!("{}: {}\r\n{}{}", type_req, ip, req, req_head);
     if let Ok(mut old_text) = fs::read_to_string(DIR_LOG) {
         old_text.push_str(&req_total);
         if fs::write(DIR_LOG, old_text).is_err() {

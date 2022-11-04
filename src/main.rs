@@ -22,7 +22,7 @@ fn main() {
             run_cleaner(<&std::path::Path>::clone(&cache_dir).to_path_buf());
             run_writer(receiver);
 
-            handle_connection(pool, listener, &push, &pop, &sender, cache_dir.to_path_buf(), ttl);
+            handle_connection(pool, listener, &push, &pop, &sender, cache_dir.to_path_buf(), ttl, true);
         }
         Err(_) => println!("Failed to listen in {}", IP_LISTENER),
     }
